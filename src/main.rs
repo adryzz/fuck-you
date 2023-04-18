@@ -1,22 +1,22 @@
 use colored::Colorize;
-use fake::Faker;
+use fake::faker::address::en::StateAbbr;
+use fake::faker::address::en::StreetName;
+use fake::faker::address::en::ZipCode;
+use fake::faker::internet::en::FreeEmail;
 use fake::faker::internet::en::IPv4;
 use fake::faker::internet::en::UserAgent;
+use fake::faker::lorem::en::Paragraph;
+use fake::faker::name::en::FirstName;
+use fake::faker::name::en::LastName;
+use fake::faker::phone_number::en::PhoneNumber;
 use fake::Dummy;
 use fake::Fake;
+use fake::Faker;
 use rayon::prelude::*;
 use reqwest::blocking::Client;
 use reqwest::header::HeaderMap;
 use reqwest::header::HeaderValue;
 use serde::{Deserialize, Serialize};
-use fake::faker::name::en::FirstName;
-use fake::faker::name::en::LastName;
-use fake::faker::lorem::en::Paragraph;
-use fake::faker::address::en::StateAbbr;
-use fake::faker::address::en::ZipCode;
-use fake::faker::address::en::StreetName;
-use fake::faker::internet::en::FreeEmail;
-use fake::faker::phone_number::en::PhoneNumber;
 
 const url: &str = "https://ago.mo.gov/file-a-complaint/transgender-center-concerns?sf_cntrl_id=ctl00$MainContent$C001";
 
@@ -33,7 +33,7 @@ pub struct RequestData {
     #[serde(rename = "TextFieldController_1")]
     #[dummy(faker = "StreetName()")]
     address: String,
-    
+
     #[serde(rename = "TextFieldController_2")]
     city: String,
     #[serde(rename = "DropdownListFieldController")]
@@ -54,7 +54,7 @@ pub struct RequestData {
 
     #[serde(rename = "ParagraphTextFieldController")]
     #[dummy(faker = "Paragraph(1000..2000)")]
-    paragraph: String
+    paragraph: String,
 }
 
 fn main() {
@@ -66,7 +66,10 @@ fn main() {
 
         // remove this for random paragraph generation
         data.paragraph = bee_movie_script.to_string();
-        let request = client.post(url).headers(generate_headers()).json::<RequestData>(&data);
+        let request = client
+            .post(url)
+            .headers(generate_headers())
+            .json::<RequestData>(&data);
 
         if let Ok(response) = request.send() {
             print!("{}", ".".green());
